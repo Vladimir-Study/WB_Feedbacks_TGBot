@@ -5,6 +5,7 @@ from WB_feedbacks import WBParser
 from yandex_AI import YandexAI
 from envparse import Env
 from answer_message import Answer
+from pprint import pprint
 import asyncio
 
 env = Env()
@@ -70,6 +71,7 @@ async def get_feedbacks(message):
     wb_token = user_data[3]
     # is_payed = True if user_data[2] == 1 else False
     feedbacks_count = user_data[4]
+    global user_parser
     user_parser = WBParser(wb_token)
     markup = util.quick_markup(
         {
@@ -104,7 +106,6 @@ async def get_feedbacks(message):
             )
         i = 0
         while i != unanswered_count:
-            print(i)
             text_feedback = feedbacks.get("data").get(
                 "feedbacks")[i].get("text")
             company = (
@@ -137,8 +138,8 @@ async def get_feedbacks(message):
                 continue
             ai_feedback = await ya_ai.create_feetbacks(text_feedback, company)
             set_product_valuation = ""
-            for i in range(1, 6, 1):
-                if i <= int(get_product_valuation):
+            for index in range(1, 6, 1):
+                if index <= int(get_product_valuation):
                     set_product_valuation += "⭐️"
                 else:
                     set_product_valuation += "♦️"
@@ -289,13 +290,13 @@ async def callbacks(callback):
         )
     elif callback.data == "edit":
         await bot.set_state(callback.from_user.id, "edit", callback.message.chat.id)
-        edit_msg["edit"] = my_state.pop(callback.message.message_id, None)
+        edit_msg["edit"] = my_state.pop(callback.message.message_id-1, None)
         await bot.send_message(
             callback.message.chat.id,
             "Отправьте отредактированный отзыв " "в следующем сообщении.",
         )
     elif callback.data == "regenerate":
-        fedback_msg = my_state.pop(callback.message.message_id, None)
+        fedback_msg = my_state.pop(callback.message.message_id-1, None)
         await bot.delete_message(callback.message.chat.id, callback.message.message_id)
         ai_feedback = await ya_ai.create_feetbacks(
             fedback_msg.text_feedback, fedback_msg.company
@@ -316,12 +317,13 @@ async def callbacks(callback):
     elif callback.data == "not_answer":
         await bot.delete_message(callback.message.chat.id, callback.message.message_id)
     elif callback.data == "publish":
-        fedback_msg = my_state.pop(callback.message.message_id, None)
+        fedback_msg = my_state.pop(callback.message.message_id-1, None)
         await user_parser.feedback_answer(
             fedback_msg.feedback_id, fedback_msg.ai_answer
         )
-        await user_parser.check_feedback(fedback_msg.feedback_id)
+        # await user_parser.check_feedback(fedback_msg.feedback_id)
         await db.minus_count_query(uid)
+        await bot.delete_message(callback.message.chat.id, callback.message.message_id)
 
 
 if __name__ == "__main__":

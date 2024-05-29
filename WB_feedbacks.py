@@ -1,4 +1,6 @@
 import asyncio
+from pprint import pprint
+
 from envparse import Env
 from yandex_AI import YandexAI
 from logger import logger
@@ -39,7 +41,8 @@ class WBParser:
             "text": feedback_text
         }
         try:
-            response = await YandexAI.create_request(self.GET_FEEDBACK_URL, 'post', headers=headers, body=body)
+            response = await YandexAI.create_request(self.GET_FEEDBACK_URL, 'patch', headers=headers, body=body)
+            pprint(response)
             logger.success("Answer feedback")
             return response
         except Exception as E:
@@ -54,7 +57,7 @@ class WBParser:
             "wasViewed": True
         }
         try:
-            response = await YandexAI.create_request(self.GET_FEEDBACK_URL, 'post', headers=headers, body=body)
+            response = await YandexAI.create_request(self.GET_FEEDBACK_URL, 'patch', headers=headers, body=body)
             logger.success("Update check feedback")
             return response
         except Exception as E:

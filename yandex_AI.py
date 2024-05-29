@@ -35,6 +35,12 @@ class YandexAI:
                     ) as response:
                         logger.info(f" Request status: {response.status}")
                         return await response.json()
+                if method == "patch":
+                    async with session.patch(
+                            url=url, json=body, headers=headers, params=params
+                    ) as response:
+                        logger.info(f" Request status: {response.status}")
+                        return await response.json()
         except Exception as E:
             logger.error({
                 "Error request": E
