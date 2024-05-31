@@ -16,7 +16,7 @@ class WBParser:
     def __init__(self, token):
         self.token = token
 
-    async def get_feedback(self, is_answered: str = 'false', take: int = 10, skip: int = 0):
+    async def get_feedback(self, is_answered: str = 'true', take: int = 10, skip: int = 0):
         params = {
             "isAnswered": is_answered,
             "take": take,

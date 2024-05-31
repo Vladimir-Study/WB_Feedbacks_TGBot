@@ -53,7 +53,7 @@ class YandexAI:
         body = {"yandexPassportOauthToken": self.token}
         return await YandexAI.create_request(self.IAM_TOKEN_URL, "post", body=body)
 
-    async def create_feetbacks(self, feedback_text: str, company: str):
+    async def create_feetbacks(self, feedback_text: str, company: str, name: str):
         aim_token = await self.get_IAM_token()
         catalog_uid = env("CATALOG_UID")
         headers = {"Authorization": f"Bearer {aim_token.get('iamToken')}"}
@@ -67,10 +67,11 @@ class YandexAI:
             "messages": [
                 {
                     "role": "system",
-                    "text": f"Ты — комьюнити-менеджер и работаешь с обратной связью "
-                            f"клиентов на продукты компании {company}. Напиши вежливый ответ "
-                            f"на отзыв покупателя в Интернете. Длинной до 500 символов. С подписью: "
-                            f"С Уважением компания {company}",
+                    "text": f"Ты — комьюнити-менеджер и работаешь с обратной связью клиентов на продукты компании "
+                            f"{company}. Напиши вежливый ответ "
+                            f"на отзыв покупателя по имени {name} в Интернете. "
+                            f"Длинной до 500 символов. Если отзыв негативный, предложи помощь, "
+                            f"если положительный поблагодари за отзыв."
                 },
                 {
                     "role": "user",
