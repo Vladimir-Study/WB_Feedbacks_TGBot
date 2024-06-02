@@ -2353,3 +2353,166 @@
 2024-05-31T20:19:38.385830+0300 SUCCESS Generate AI feedback
 2024-05-31T20:19:48.248771+0300 INFO User was added in Database
 2024-05-31T20:19:48.249768+0300 SUCCESS Return count query
+2024-06-01T13:20:43.327238+0300 INFO User was added in Database
+2024-06-01T13:20:43.329148+0300 SUCCESS Return count query
+2024-06-01T13:20:47.543111+0300 SUCCESS Get user data
+2024-06-01T13:20:48.388086+0300 INFO  Request status: 200
+2024-06-01T13:20:48.388658+0300 SUCCESS Get feedbacks
+2024-06-01T13:21:20.284470+0300 SUCCESS Get user data
+2024-06-01T13:21:20.960365+0300 INFO  Request status: 200
+2024-06-01T13:21:20.960892+0300 SUCCESS Get feedbacks
+2024-06-01T13:21:30.787217+0300 SUCCESS Get user data
+2024-06-01T13:21:31.650777+0300 INFO  Request status: 200
+2024-06-01T13:21:31.651503+0300 SUCCESS Get feedbacks
+2024-06-01T13:21:41.246915+0300 SUCCESS Get user data
+2024-06-01T13:21:41.896840+0300 INFO  Request status: 200
+2024-06-01T13:21:41.897627+0300 SUCCESS Get feedbacks
+2024-06-01T13:21:44.553094+0300 INFO User was added in Database
+2024-06-01T13:21:44.554264+0300 SUCCESS Return count query
+2024-06-01T13:22:46.506915+0300 SUCCESS Get user data
+2024-06-01T13:22:47.239442+0300 INFO  Request status: 200
+2024-06-01T13:22:47.240105+0300 SUCCESS Get feedbacks
+2024-06-01T13:27:42.353848+0300 SUCCESS Get user data
+2024-06-01T13:27:43.006539+0300 INFO  Request status: 200
+2024-06-01T13:27:43.007277+0300 SUCCESS Get feedbacks
+2024-06-01T13:28:18.276721+0300 SUCCESS Get user data
+2024-06-01T13:28:19.556027+0300 INFO  Request status: 200
+2024-06-01T13:28:19.556546+0300 SUCCESS Get feedbacks
+2024-06-01T13:28:20.033989+0300 INFO 200
+2024-06-01T13:28:22.102689+0300 INFO 200
+2024-06-01T13:28:22.103168+0300 SUCCESS Generate AI feedback
+2024-06-01T13:28:23.104171+0300 INFO 200
+2024-06-01T13:28:25.941087+0300 INFO 200
+2024-06-01T13:28:25.941634+0300 SUCCESS Generate AI feedback
+2024-06-01T13:28:26.546990+0300 INFO 200
+2024-06-01T13:28:28.182835+0300 INFO 200
+2024-06-01T13:28:28.183303+0300 SUCCESS Generate AI feedback
+2024-06-01T14:39:32.515354+0300 SUCCESS Get user data
+2024-06-01T14:39:33.236996+0300 INFO  Request status: 200
+2024-06-01T14:39:33.237706+0300 SUCCESS Get feedbacks
+2024-06-01T14:39:33.744923+0300 INFO 200
+2024-06-01T14:40:34.248030+0300 INFO 504
+2024-06-01T14:40:34.248441+0300 ERROR {'Error request': ContentTypeError(RequestInfo(url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), method='POST', headers=<CIMultiDictProxy('Host': 'llm.api.cloud.yandex.net', 'Authorization': 'Bearer t1.9euelZrLmsyOx47NkpzGl5qby4uWjO3rnpWajc_Jjc6Ml82cncuTjMuKx5fl8_cKbxNN-e8sASwN_d3z90odEU357ywBLA39zef1656VmpedlpCOx8qKi82djY-Qm8aS7_zF656VmpedlpCOx8qKi82djY-Qm8aS.1pNyha8Ds-pM_FXBNA8vmnc_IA08YaadDn7CX50r5EPn9Q0fPvXHOw_Hb6284nmfuub-cH79HcXauim1pJsTCg', 'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'User-Agent': 'Python/3.10 aiohttp/3.9.5', 'Content-Length': '1656', 'Content-Type': 'application/json')>, real_url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion')), (), message='Attempt to decode JSON with unexpected mimetype: text/plain', headers=<CIMultiDictProxy('Content-Length': '64', 'Content-Type': 'text/plain', 'Date': 'Sat, 01 Jun 2024 11:40:33 GMT', 'Server': 'ycalb')>)}
+2024-06-01T14:40:34.248709+0300 SUCCESS Generate AI feedback
+2024-06-01T14:42:09.535600+0300 INFO User was added in Database
+2024-06-01T14:42:09.537406+0300 SUCCESS Return count query
+2024-06-01T14:42:14.111159+0300 SUCCESS Get user data
+2024-06-01T14:42:14.720742+0300 INFO  Request status: 200
+2024-06-01T14:42:14.721384+0300 SUCCESS Get feedbacks
+2024-06-01T14:42:15.105084+0300 INFO 200
+2024-06-01T14:43:15.542472+0300 INFO 504
+2024-06-01T14:43:15.543165+0300 ERROR {'Error request': ContentTypeError(RequestInfo(url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), method='POST', headers=<CIMultiDictProxy('Host': 'llm.api.cloud.yandex.net', 'Authorization': 'Bearer t1.9euelZqQmMybjcuek8uUi52Mx5maxu3rnpWajc_Jjc6Ml82cncuTjMuKx5fl8_d-cxNN-e8sfgxJ_N3z9z4iEU357yx-DEn8zef1656VmpuJmI6LjYuezprLkYvLyYqY7_zF656VmpuJmI6LjYuezprLkYvLyYqY.qtu8uaV_2vQa5dzXFr5PerqiBGdE8Fh_dgR__SG4ignbblD3OM9xBF5zquLtwMNOidKDfMaWnt8vfVL3sZZhDA', 'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'User-Agent': 'Python/3.10 aiohttp/3.9.5', 'Content-Length': '1656', 'Content-Type': 'application/json')>, real_url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion')), (), message='Attempt to decode JSON with unexpected mimetype: text/plain', headers=<CIMultiDictProxy('Content-Length': '64', 'Content-Type': 'text/plain', 'Date': 'Sat, 01 Jun 2024 11:43:15 GMT', 'Server': 'ycalb')>)}
+2024-06-01T14:43:15.543471+0300 SUCCESS Generate AI feedback
+2024-06-01T14:51:56.337193+0300 SUCCESS Get user data
+2024-06-01T14:51:57.062553+0300 INFO  Request status: 200
+2024-06-01T14:51:57.063655+0300 SUCCESS Get feedbacks
+2024-06-01T14:51:57.385689+0300 INFO 200
+2024-06-01T14:52:57.935614+0300 INFO 504
+2024-06-01T14:52:57.936123+0300 ERROR {'Error request': ContentTypeError(RequestInfo(url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), method='POST', headers=<CIMultiDictProxy('Host': 'llm.api.cloud.yandex.net', 'Authorization': 'Bearer t1.9euelZqTicmUzpePj5yQnpGbiZaUy-3rnpWajc_Jjc6Ml82cncuTjMuKx5fl8_cEdBNN-e8fCBRI_N3z90QiEU357x8IFEj8zef1656VmpaPx8idy82Px5HJycrHkpzM7_zF656VmpaPx8idy82Px5HJycrHkpzM.2bgvGA1tTKPTkjXz9UClWcXH-z_GO0xKtFVLbPncvN6r_MT3N_LSFdL-Ce4cglHr9Nkmr0V_uH6pieGQx12uAA', 'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'User-Agent': 'Python/3.10 aiohttp/3.9.5', 'Content-Length': '1656', 'Content-Type': 'application/json')>, real_url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion')), (), message='Attempt to decode JSON with unexpected mimetype: text/plain', headers=<CIMultiDictProxy('Content-Length': '64', 'Content-Type': 'text/plain', 'Date': 'Sat, 01 Jun 2024 11:52:57 GMT', 'Server': 'ycalb')>)}
+2024-06-01T14:52:57.936390+0300 SUCCESS Generate AI feedback
+2024-06-01T15:09:44.157116+0300 INFO 200
+2024-06-01T15:10:44.663050+0300 INFO 504
+2024-06-01T15:10:44.663594+0300 ERROR {'Error request': ContentTypeError(RequestInfo(url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion'), method='POST', headers=<CIMultiDictProxy('Host': 'llm.api.cloud.yandex.net', 'Authorization': 'Bearer t1.9euelZqexpbMipfMko7Kko3KjJPPm-3rnpWajc_Jjc6Ml82cncuTjMuKx5fl9PcBdBNN-e9lCTaq3fT3QSIRTfnvZQk2qs3n9euelZqKzpmSiYydk52bls7Mi83Px-_8xeuelZqKzpmSiYydk52bls7Mi83Pxw.kAUf-KgUPTBM-xkYVWgwjEXGec2oNtIq26mSW-j-PAfyVqXXFe69uwTqv93vbVb4rvPUaFlco85K9QPeMhmmCQ', 'Accept': '*/*', 'Accept-Encoding': 'gzip, deflate', 'User-Agent': 'Python/3.10 aiohttp/3.9.5', 'Content-Length': '1522', 'Content-Type': 'application/json')>, real_url=URL('https://llm.api.cloud.yandex.net/foundationModels/v1/completion')), (), message='Attempt to decode JSON with unexpected mimetype: text/plain', headers=<CIMultiDictProxy('Content-Length': '64', 'Content-Type': 'text/plain', 'Date': 'Sat, 01 Jun 2024 12:10:44 GMT', 'Server': 'ycalb')>)}
+2024-06-01T15:10:44.663880+0300 SUCCESS Generate AI feedback
+2024-06-01T15:36:41.123426+0300 INFO 200
+2024-06-01T15:36:43.210270+0300 INFO 200
+2024-06-01T15:36:43.210759+0300 SUCCESS Generate AI feedback
+2024-06-01T15:36:59.739667+0300 INFO 200
+2024-06-01T15:37:02.090554+0300 INFO 200
+2024-06-01T15:37:02.091076+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:02.723536+0300 SUCCESS Get user data
+2024-06-01T15:37:03.403229+0300 INFO  Request status: 200
+2024-06-01T15:37:03.403846+0300 SUCCESS Get feedbacks
+2024-06-01T15:37:03.709806+0300 INFO 200
+2024-06-01T15:37:05.904309+0300 INFO 200
+2024-06-01T15:37:05.904869+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:06.735785+0300 INFO 200
+2024-06-01T15:37:09.770436+0300 INFO 200
+2024-06-01T15:37:09.770865+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:10.280716+0300 INFO 200
+2024-06-01T15:37:12.811816+0300 INFO 200
+2024-06-01T15:37:12.812252+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:13.354473+0300 INFO 200
+2024-06-01T15:37:15.850414+0300 INFO 200
+2024-06-01T15:37:15.850948+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:16.402889+0300 INFO 200
+2024-06-01T15:37:18.432439+0300 INFO 200
+2024-06-01T15:37:18.432963+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:18.941328+0300 INFO 200
+2024-06-01T15:37:21.294026+0300 INFO 200
+2024-06-01T15:37:21.294509+0300 SUCCESS Generate AI feedback
+2024-06-01T15:37:21.807086+0300 INFO 200
+2024-06-01T15:37:23.417610+0300 INFO 200
+2024-06-01T15:37:23.418156+0300 SUCCESS Generate AI feedback
+2024-06-01T15:42:46.110131+0300 INFO User was added in Database
+2024-06-01T15:42:46.111445+0300 SUCCESS Return count query
+2024-06-01T15:42:49.155652+0300 SUCCESS Get user data
+2024-06-01T15:42:49.792571+0300 INFO  Request status: 200
+2024-06-01T15:42:49.793409+0300 SUCCESS Get feedbacks
+2024-06-01T15:42:50.134262+0300 INFO 200
+2024-06-01T15:42:52.178536+0300 INFO 200
+2024-06-01T15:42:52.179139+0300 SUCCESS Generate AI feedback
+2024-06-01T15:48:43.139854+0300 SUCCESS Get user data
+2024-06-01T15:48:44.450945+0300 INFO  Request status: 200
+2024-06-01T15:48:44.451535+0300 SUCCESS Get feedbacks
+2024-06-01T15:48:44.786934+0300 INFO 200
+2024-06-01T15:48:47.270757+0300 INFO 200
+2024-06-01T15:48:47.271225+0300 SUCCESS Generate AI feedback
+2024-06-01T15:52:05.906550+0300 SUCCESS Get user data
+2024-06-01T15:52:06.469033+0300 INFO  Request status: 200
+2024-06-01T15:52:06.469479+0300 SUCCESS Get feedbacks
+2024-06-01T15:52:06.917352+0300 INFO 200
+2024-06-01T15:52:08.870260+0300 INFO 200
+2024-06-01T15:52:08.870820+0300 SUCCESS Generate AI feedback
+2024-06-01T17:00:17.217280+0300 SUCCESS Get user data
+2024-06-01T17:00:17.889736+0300 INFO  Request status: 200
+2024-06-01T17:00:17.890972+0300 SUCCESS Get feedbacks
+2024-06-01T17:00:18.386138+0300 INFO 200
+2024-06-01T17:00:20.734630+0300 INFO 200
+2024-06-01T17:00:20.735198+0300 SUCCESS Generate AI feedback
+2024-06-01T17:39:50.696633+0300 SUCCESS Get user data
+2024-06-01T17:39:50.697173+0300 SUCCESS Get user data
+2024-06-01T17:39:50.702534+0300 SUCCESS Get user data
+2024-06-01T17:39:51.463488+0300 INFO  Request status: 200
+2024-06-01T17:39:51.464206+0300 INFO  Request status: 200
+2024-06-01T17:39:51.464489+0300 INFO  Request status: 200
+2024-06-01T17:39:51.464720+0300 SUCCESS Get feedbacks
+2024-06-01T17:39:51.465318+0300 SUCCESS Get feedbacks
+2024-06-01T17:39:51.465635+0300 SUCCESS Get feedbacks
+2024-06-01T17:39:51.977253+0300 INFO 200
+2024-06-01T17:39:51.977912+0300 INFO 200
+2024-06-01T17:39:51.978924+0300 INFO 200
+2024-06-01T17:39:52.477126+0300 INFO 429
+2024-06-01T17:39:52.477618+0300 SUCCESS Generate AI feedback
+2024-06-01T17:39:52.526735+0300 INFO 429
+2024-06-01T17:39:52.527179+0300 SUCCESS Generate AI feedback
+2024-06-01T17:39:54.187395+0300 INFO 200
+2024-06-01T17:39:54.188111+0300 SUCCESS Generate AI feedback
+2024-06-01T17:39:56.373410+0300 SUCCESS Get user data
+2024-06-01T17:39:56.885214+0300 INFO  Request status: 200
+2024-06-01T17:39:56.885678+0300 SUCCESS Get feedbacks
+2024-06-01T17:39:57.210329+0300 INFO 200
+2024-06-01T17:39:59.302015+0300 INFO 200
+2024-06-01T17:39:59.302500+0300 SUCCESS Generate AI feedback
+2024-06-01T18:57:16.725889+0300 SUCCESS Get user data
+2024-06-01T18:57:47.799065+0300 SUCCESS Get user data
+2024-06-01T19:03:17.674877+0300 INFO User was added in Database
+2024-06-01T19:03:34.209405+0300 SUCCESS Get user data
+2024-06-01T19:04:04.199153+0300 SUCCESS Get user data
+2024-06-01T19:04:34.194033+0300 SUCCESS Get user data
+2024-06-01T19:05:04.198937+0300 SUCCESS Get user data
+2024-06-01T19:05:34.208263+0300 SUCCESS Get user data
+2024-06-01T19:06:06.425426+0300 SUCCESS Get user data
+2024-06-01T19:06:36.420525+0300 SUCCESS Get user data
+2024-06-01T19:06:43.668145+0300 INFO User was added in Database
+2024-06-01T19:07:06.419522+0300 SUCCESS Get user data
+2024-06-01T19:32:17.460833+0300 INFO User was added in Database
+2024-06-01T19:32:19.852443+0300 INFO User was added in Database
+2024-06-01T19:32:19.853426+0300 SUCCESS Return count query
+2024-06-01T19:32:43.016379+0300 SUCCESS Get user data
+2024-06-01T19:32:53.368044+0300 INFO User was added in Database
+2024-06-01T19:32:59.356430+0300 SUCCESS Get user data
+2024-06-01T19:33:09.355621+0300 SUCCESS Get user data
+2024-06-01T19:33:19.357670+0300 SUCCESS Get user data
+2024-06-01T19:33:29.358806+0300 SUCCESS Get user data
+2024-06-01T19:33:39.356663+0300 SUCCESS Get user data

@@ -84,4 +84,5 @@ class YandexAI:
             logger.success("Generate AI feedback")
             return response
         except Exception as E:
-            logger.error(f"Generate AI feedback: {E}")
+            logger.error(f"Generate AI feedback {E}")
+

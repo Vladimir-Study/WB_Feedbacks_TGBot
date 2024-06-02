@@ -5,6 +5,7 @@ from telebot.types import CallbackQuery, Message, InlineKeyboardMarkup
 from telebot.callback_data import CallbackData, CallbackDataFilter
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from database import DataBase
 from WB_feedbacks import WBParser
 from yandex_AI import YandexAI
@@ -34,6 +35,7 @@ my_state = {}
 state = None
 edit_msg = {"edit": None}
 my_signature = ''
+uid = 0
 
 
 async def create_markup(message_id: int) -> InlineKeyboardMarkup:
@@ -51,6 +53,9 @@ async def create_markup(message_id: int) -> InlineKeyboardMarkup:
 
 @bot.message_handler(commands=["start"])
 async def start_handler(message):
+    global uid
+    uid = message.from_user.id
+    await db.add_user_query(uid, message.chat.id)
     welcome_text = (
         "Привет, я {{ИМЯ}} - исскуственный интелект,"
         "помогаю отвечать на отзывы покупателей. Если ты "
@@ -63,156 +68,158 @@ async def start_handler(message):
     await bot.send_message(message.chat.id, welcome_text, reply_markup=main_menu)
 
 
-@bot.message_handler(commands=["feedbacks"])
-async def my_feedbacks(message):
-    await bot.delete_message(message.chat.id, message.message_id)
-    feedbacks_count = await db.get_count_query(message.from_user.id)
-    await bot.send_message(
-        message.chat.id, f"У Вас осталось {feedbacks_count} отзывов."
-    )
+# @bot.message_handler(commands=["feedbacks"])
+# async def my_feedbacks(message):
+#     await bot.delete_message(message.chat.id, message.message_id)
+#     feedbacks_count = await db.get_count_query(message.from_user.id)
+#     await bot.send_message(
+#         message.chat.id, f"У Вас осталось {feedbacks_count} отзывов."
+#     )
+#
+#
+# @bot.message_handler(commands=["add_token"])
+# async def add_token(message):
+#     global state
+#     add_instruction = (
+#         "*1.* Перейдите в личный кабинет Wildberries (данное "
+#         "действие необходимо выполнить владельцу кабинета) "
+#         "[Профиль -> Настройки - Доступ к API](https://seller.wildberries.ru/about-portal/ru/)\n"
+#         "*2.* Введите имя токена, например WBBotToken\n"
+#         "*3.* Выберите 'Контент' и 'Вопросы и отзывы'\n"
+#         "*4.* Нажмите 'Создать токен'\n"
+#         "*Следующим сообщением отправьте токен!!!*"
+#     )
+#     state = 'token'
+#     await bot.delete_message(message.chat.id, message.id)
+#     await bot.send_message(message.chat.id, text=add_instruction, parse_mode="Markdown")
+#
+#
 
 
-@bot.message_handler(commands=["add_token"])
-async def add_token(message):
-    global state
-    add_instruction = (
-        "*1.* Перейдите в личный кабинет Wildberries (данное "
-        "действие необходимо выполнить владельцу кабинета) "
-        "[Профиль -> Настройки - Доступ к API](https://seller.wildberries.ru/about-portal/ru/)\n"
-        "*2.* Введите имя токена, например WBBotToken\n"
-        "*3.* Выберите 'Контент' и 'Вопросы и отзывы'\n"
-        "*4.* Нажмите 'Создать токен'\n"
-        "*Следующим сообщением отправьте токен!!!*"
-    )
-    state = 'token'
-    await bot.delete_message(message.chat.id, message.id)
-    await bot.send_message(message.chat.id, text=add_instruction, parse_mode="Markdown")
-
-
-@bot.message_handler(commands=["get_feedbacks"])
-async def get_feedbacks(message):
-    await bot.delete_message(message.chat.id, message.message_id)
-    user_data = await db.get_user_data(message.from_user.id)
-    wb_token = user_data[3]
-    feedbacks_count = user_data[4]
-    global user_parser
-    user_parser = WBParser(wb_token)
-    feedbacks = await user_parser.get_feedback()
-    unanswered_count = len(feedbacks.get("data").get("feedbacks"))
-    if feedbacks_count == 0:
-        await bot.send_message(
-            message.chat.id,
-            f"Вам необходимо произвести оплату, "
-            f"баланс ваших отзывов равен: {feedbacks_count}",
-        )
-    else:
-        if unanswered_count > feedbacks_count:
-            await bot.send_message(
-                message.chat.id,
-                "У Вас недостаточно отзывов чтобы ответить "
-                "на все сообщения, пожалуйста произведите оплату. "
-                "Для этого введите команду /tariffs",
-            )
-            unanswered_count = feedbacks_count
-        if unanswered_count == 0:
-            await bot.send_message(
-                message.chat.id,
-                "У Вас нет неотвеченных отзывов.",
-            )
-        i = 0
-        while i != unanswered_count:
-            text_feedback = feedbacks.get("data").get(
-                "feedbacks")[i].get("text")
-            company = (
-                feedbacks.get("data")
-                .get("feedbacks")[i]
-                .get("productDetails")
-                .get("brandName")
-            )
-            created_date = (
-                feedbacks.get("data").get("feedbacks")[
-                    i].get("createdDate")
-            )
-            product_name = (
-                feedbacks.get("data")
-                .get("feedbacks")[i]
-                .get("productDetails")
-                .get("productName")
-            )
-            get_product_valuation = (
-                feedbacks.get("data").get("feedbacks")[
-                    i].get("productValuation")
-            )
-            feedback_id = feedbacks.get("data").get(
-                "feedbacks")[i].get("id")
-            user_name = feedbacks.get("data").get("feedbacks")[i].get("userName")
-            if text_feedback == "":
-                # await bot.send_message(
-                #     message.chat.id, "Невозможно ответить на пустой отзыв."
-                # )
-                i += 1
-                continue
-            ai_feedback = await ya_ai.create_feetbacks(text_feedback, company, user_name)
-            set_product_valuation = ""
-            for index in range(1, 6, 1):
-                if index <= int(get_product_valuation):
-                    set_product_valuation += "⭐️"
-                else:
-                    set_product_valuation += "♦️"
-            ai_answer = (
-                ai_feedback.get("result")
-                .get("alternatives")[0]
-                .get("message")
-                .get("text")
-            )
-            next_message_id = (message.message_id + i + 1)
-            answer_message = Answer(
-                company,
-                product_name,
-                set_product_valuation,
-                created_date[:10],
-                text_feedback,
-                ai_answer,
-                int(next_message_id),
-                feedback_id,
-                user_name
-            )
-            my_state[next_message_id] = answer_message
-            send_message = await answer_message.create_message_not_signature()
-            markup = await create_markup(next_message_id)
-            await bot.send_message(
-                message.chat.id,
-                send_message,
-                reply_markup=markup,
-                parse_mode="Markdown",
-            )
-            i += 1
-
-
-@bot.message_handler(commands=["tariffs"])
-async def get_tariffs(message):
-    await bot.delete_message(message.chat.id, message.message_id)
-    markup = quick_markup(
-        {
-            "100": {"callback_data": "pay_100"},
-            "500": {"callback_data": "pay_500"},
-            "1000": {"callback_data": "pay_1000"},
-            "2000": {"callback_data": "pay_2000"},
-            "10000": {"callback_data": "pay_10000"},
-        },
-        row_width=2,
-    )
-    answer_message = (
-        "Доступные тарифы:\n\n"
-        "Стартовый - 100 ответов. Цена 392 руб. Цена за 1 отзыв 3.92 руб.\n"
-        "Базовый - 500 ответов. Цена 1592 руб. Цена за 1 отзыв 3.18 руб.\n"
-        "Расширенный - 1000 ответов. Цена 2872 руб. Цена за 1 отзыв 2.87 руб.\n"
-        "Премиум - 2000 ответов. Цена 5592 руб. Цена за 1 отзыв 2.79 руб.\n"
-        "ТОП - 10000 ответов. Цена 23992 руб. Цена за 1 отзыв 2.39 руб.\n"
-        "Выберите подходящий тариф."
-    )
-    await bot.send_message(message.chat.id, answer_message, reply_markup=markup)
-
+# @bot.message_handler(commands=["get_feedbacks"])
+# async def get_feedbacks(message):
+#     await bot.delete_message(message.chat.id, message.message_id)
+#     user_data = await db.get_user_data(message.from_user.id)
+#     wb_token = user_data[3]
+#     feedbacks_count = user_data[4]
+#     global user_parser
+#     user_parser = WBParser(wb_token)
+#     feedbacks = await user_parser.get_feedback()
+#     unanswered_count = len(feedbacks.get("data").get("feedbacks"))
+#     if feedbacks_count == 0:
+#         await bot.send_message(
+#             message.chat.id,
+#             f"Вам необходимо произвести оплату, "
+#             f"баланс ваших отзывов равен: {feedbacks_count}",
+#         )
+#     else:
+#         if unanswered_count > feedbacks_count:
+#             await bot.send_message(
+#                 message.chat.id,
+#                 "У Вас недостаточно отзывов чтобы ответить "
+#                 "на все сообщения, пожалуйста произведите оплату. "
+#                 "Для этого введите команду /tariffs",
+#             )
+#             unanswered_count = feedbacks_count
+#         if unanswered_count == 0:
+#             await bot.send_message(
+#                 message.chat.id,
+#                 "У Вас нет неотвеченных отзывов.",
+#             )
+#         i = 0
+#         while i != unanswered_count:
+#             text_feedback = feedbacks.get("data").get(
+#                 "feedbacks")[i].get("text")
+#             company = (
+#                 feedbacks.get("data")
+#                 .get("feedbacks")[i]
+#                 .get("productDetails")
+#                 .get("brandName")
+#             )
+#             created_date = (
+#                 feedbacks.get("data").get("feedbacks")[
+#                     i].get("createdDate")
+#             )
+#             product_name = (
+#                 feedbacks.get("data")
+#                 .get("feedbacks")[i]
+#                 .get("productDetails")
+#                 .get("productName")
+#             )
+#             get_product_valuation = (
+#                 feedbacks.get("data").get("feedbacks")[
+#                     i].get("productValuation")
+#             )
+#             feedback_id = feedbacks.get("data").get(
+#                 "feedbacks")[i].get("id")
+#             user_name = feedbacks.get("data").get("feedbacks")[i].get("userName")
+#             if text_feedback == "":
+#                 # await bot.send_message(
+#                 #     message.chat.id, "Невозможно ответить на пустой отзыв."
+#                 # )
+#                 i += 1
+#                 continue
+#             ai_feedback = await ya_ai.create_feetbacks(text_feedback, company, user_name)
+#             set_product_valuation = ""
+#             for index in range(1, 6, 1):
+#                 if index <= int(get_product_valuation):
+#                     set_product_valuation += "⭐️"
+#                 else:
+#                     set_product_valuation += "♦️"
+#             ai_answer = (
+#                 ai_feedback.get("result")
+#                 .get("alternatives")[0]
+#                 .get("message")
+#                 .get("text")
+#             )
+#             next_message_id = (message.message_id + i + 1)
+#             answer_message = Answer(
+#                 company,
+#                 product_name,
+#                 set_product_valuation,
+#                 created_date[:10],
+#                 text_feedback,
+#                 ai_answer,
+#                 int(next_message_id),
+#                 feedback_id,
+#                 user_name
+#             )
+#             my_state[next_message_id] = answer_message
+#             send_message = await answer_message.create_message_not_signature()
+#             markup = await create_markup(next_message_id)
+#             await bot.send_message(
+#                 message.chat.id,
+#                 send_message,
+#                 reply_markup=markup,
+#                 parse_mode="Markdown",
+#             )
+#             i += 1
+#
+#
+# @bot.message_handler(commands=["tariffs"])
+# async def get_tariffs(message):
+#     await bot.delete_message(message.chat.id, message.message_id)
+#     markup = quick_markup(
+#         {
+#             "100": {"callback_data": "pay_100"},
+#             "500": {"callback_data": "pay_500"},
+#             "1000": {"callback_data": "pay_1000"},
+#             "2000": {"callback_data": "pay_2000"},
+#             "10000": {"callback_data": "pay_10000"},
+#         },
+#         row_width=2,
+#     )
+#     answer_message = (
+#         "Доступные тарифы:\n\n"
+#         "Стартовый - 100 ответов. Цена 392 руб. Цена за 1 отзыв 3.92 руб.\n"
+#         "Базовый - 500 ответов. Цена 1592 руб. Цена за 1 отзыв 3.18 руб.\n"
+#         "Расширенный - 1000 ответов. Цена 2872 руб. Цена за 1 отзыв 2.87 руб.\n"
+#         "Премиум - 2000 ответов. Цена 5592 руб. Цена за 1 отзыв 2.79 руб.\n"
+#         "ТОП - 10000 ответов. Цена 23992 руб. Цена за 1 отзыв 2.39 руб.\n"
+#         "Выберите подходящий тариф."
+#     )
+#     await bot.send_message(message.chat.id, answer_message, reply_markup=markup)
+#
 
 
 @bot.message_handler()
@@ -259,7 +266,7 @@ async def callback_edit(callback: CallbackQuery) -> None:
 
 
 @bot.callback_query_handler(func=lambda callback: callback.data == 'get_feedbacks')
-async def callback_edit(callback: CallbackQuery) -> None:
+async def callback_get_feedback(callback: CallbackQuery) -> None:
     user_data = await db.get_user_data(callback.from_user.id)
     wb_token = user_data[3]
     feedbacks_count = user_data[4]
@@ -320,6 +327,7 @@ async def callback_edit(callback: CallbackQuery) -> None:
             feedback_id = feedbacks.get("data").get(
                 "feedbacks")[i].get("id")
             user_name = feedbacks.get("data").get("feedbacks")[i].get("userName")
+            print(user_name)
             if text_feedback == "":
                 # await bot.send_message(
                 #     callback.message.chat.id, "Невозможно ответить на пустой отзыв."
@@ -436,21 +444,22 @@ async def callback_add_signature(callback: CallbackQuery):
     global my_signature
     cl_data = clb_add_signature.parse(callback_data=callback.data)
     mid = cl_data.get('mid')
-    fedback_msg = my_state.pop(int(mid), None)
-    ai_answer = f"{fedback_msg.ai_answer} {my_signature}"
-    fedback_msg.ai_answer = ai_answer
-    fedback_msg.message_id = callback.message.message_id + 1
-    my_state[callback.message.message_id + 1] = fedback_msg
-    send_msg = await fedback_msg.create_message_with_signature()
+    feedback_msg = my_state.pop(int(mid), None)
+    ai_answer = f"{feedback_msg.ai_answer} {my_signature}"
+    feedback_msg.ai_answer = ai_answer
+    send_msg = await feedback_msg.create_message_with_signature()
     markup = await create_markup(callback.message.message_id+1)
-    await bot.send_message(
+    signature_message = await bot.send_message(
         callback.message.chat.id,
         send_msg,
         reply_markup=markup,
         parse_mode="Markdown",
     )
-    await bot.delete_message(callback.message.chat.id, int(fedback_msg.message_id))
+    feedback_msg.message_id = signature_message.message_id
+    my_state[feedback_msg.message_id] = feedback_msg
+    await bot.delete_message(callback.message.chat.id, int(mid))
     await bot.answer_callback_query(callback.id)
+
 
 @bot.callback_query_handler(func=lambda callback: clb_publish.filter().check(callback))
 async def callback_pulish(callback: CallbackQuery):
@@ -499,9 +508,9 @@ async def bot_start(callback: CallbackQuery) -> None:
 
 @bot.callback_query_handler(func=lambda callback: True)
 async def callbacks(callback: CallbackQuery) -> None:
-    uid = int(callback.from_user.id)
+    global uid
     if callback.data == "main_menu":
-        add_user = await db.add_user_query(uid)
+        add_user = await db.add_user_query(uid, callback.message.chat.id)
         if add_user:
             answer_message = (
                 f"Поздравляем {callback.from_user.first_name}, Вам доступно 60 бесплатных отзывов!"
@@ -547,5 +556,12 @@ async def callbacks(callback: CallbackQuery) -> None:
     await bot.answer_callback_query(callback.id)
 
 
+async def main() -> None:
+    # sheduler = AsyncIOScheduler()
+    # sheduler.add_job(get_all_feedbacks, trigger='interval', seconds=10, kwargs={'bot': bot, 'uid': uid})
+    # sheduler.start()
+    await bot.polling(non_stop=True)
+
+
 if __name__ == "__main__":
-    asyncio.run(bot.polling(non_stop=True))
+    asyncio.run(main())
