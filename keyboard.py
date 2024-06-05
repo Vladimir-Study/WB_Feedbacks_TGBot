@@ -17,8 +17,8 @@ main_menu = quick_markup(
 top_menu = quick_markup(
     {
         "▶️Начать пользоваться ботом": {"callback_data": "bot_start"},
-        "🕔Настроить время отправки уведомлений": {"callback_data": "set_push_time"},
-        "🖋Подпись к ответу": {"callback_data": "signature_answer"},
+        # "🕔Настроить время отправки уведомлений": {"callback_data": "set_push_time"},
+        "🖋Подпись к ответу": {"callback_data": "add_signature"},
         "💵Баланс": {"callback_data": "balance"},
     }, row_width=1
 )

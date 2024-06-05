@@ -14,6 +14,7 @@ from answer_message import Answer
 from keyboard import main_menu, start_menu, top_menu, tariffs
 from pprint import pprint
 import asyncio
+import re
 
 env = Env()
 env.read_envfile()
@@ -23,7 +24,6 @@ clb_edit = CallbackData('mid', prefix='edit')
 clb_regenerate = CallbackData('mid', prefix='regenerate')
 clb_publish = CallbackData('mid', prefix='publish')
 clb_not_answer = CallbackData('mid', prefix='not_answer')
-clb_add_signature = CallbackData('mid', prefix='add_signature')
 
 
 bot = AsyncTeleBot(BOT_TOKEN)
@@ -45,7 +45,7 @@ async def create_markup(message_id: int) -> InlineKeyboardMarkup:
             "📝Редактировать": {"callback_data": clb_edit.new(mid=message_id)},
             "🔁Сгенерировать новый ответ": {"callback_data": clb_regenerate.new(mid=message_id)},
             "⛔️Не отвечать на отзыв": {"callback_data": clb_not_answer.new(mid=message_id)},
-            "✏️Добавить подпись": {"callback_data": clb_add_signature.new(mid=message_id)}
+            "ℹ️Главное меню": {"callback_data": "main_menu"}
         }
     )
     return feedback_kb
@@ -53,8 +53,8 @@ async def create_markup(message_id: int) -> InlineKeyboardMarkup:
 
 @bot.message_handler(commands=["start"])
 async def start_handler(message):
-    global uid
-    uid = message.from_user.id
+    # global uid
+    # uid = message.from_user.id
     await db.add_user_query(uid, message.chat.id)
     welcome_text = (
         "Привет, я {{ИМЯ}} - исскуственный интелект,"
@@ -66,6 +66,24 @@ async def start_handler(message):
         "и подключить кабинет, вперед!"
     )
     await bot.send_message(message.chat.id, welcome_text, reply_markup=main_menu)
+
+
+@bot.callback_query_handler(func=lambda callback: callback.data == 'main_menu')
+async def callback_edit(callback: CallbackQuery) -> None:
+    add_user = await db.add_user_query(uid, callback.message.chat.id)
+    if add_user:
+        answer_message = (
+            f"Поздравляем {callback.from_user.first_name}, Вам доступно 60 бесплатных отзывов!"
+        )
+        await bot.send_message(callback.message.chat.id, answer_message)
+    else:
+        count_query = await db.get_count_query(uid)
+        answer_message = (
+            f"{callback.from_user.first_name} Ваш аккаунт был добавлен раннее, "
+            f"у Вас осталось {count_query} ответов."
+        )
+        await bot.send_message(callback.message.chat.id, answer_message, reply_markup=top_menu)
+    await bot.answer_callback_query(callback.id)
 
 
 # @bot.message_handler(commands=["feedbacks"])
@@ -249,8 +267,10 @@ async def test_message(message):
         await bot.delete_state(message.from_user.id)
     elif state == "signature":
         my_signature = message.text
+        await db.add_user_signature(message.from_user.id, my_signature)
         await bot.send_message(
-            message.chat.id, 'Вы изменили подпись!', reply_markup=top_menu
+            message.chat.id, f'Вы изменили подпись! Ваша текущая подпись: {my_signature}',
+            reply_markup=top_menu
         )
 
 
@@ -270,6 +290,7 @@ async def callback_get_feedback(callback: CallbackQuery) -> None:
     user_data = await db.get_user_data(callback.from_user.id)
     wb_token = user_data[3]
     feedbacks_count = user_data[4]
+    user_signature = user_data[6]
     global user_parser
     user_parser = WBParser(wb_token)
     feedbacks = await user_parser.get_feedback()
@@ -327,14 +348,13 @@ async def callback_get_feedback(callback: CallbackQuery) -> None:
             feedback_id = feedbacks.get("data").get(
                 "feedbacks")[i].get("id")
             user_name = feedbacks.get("data").get("feedbacks")[i].get("userName")
-            print(user_name)
             if text_feedback == "":
                 # await bot.send_message(
                 #     callback.message.chat.id, "Невозможно ответить на пустой отзыв."
                 # )
                 i += 1
                 continue
-            ai_feedback = await ya_ai.create_feetbacks(text_feedback, company, user_name)
+            ai_feedback = await ya_ai.create_feetbacks(text_feedback, company, user_name, product_name)
             set_product_valuation = ""
             for index in range(1, 6, 1):
                 if index <= int(get_product_valuation):
@@ -360,11 +380,11 @@ async def callback_get_feedback(callback: CallbackQuery) -> None:
                 user_name
             )
             my_state[next_message_id] = answer_message
-            send_message = await answer_message.create_message_not_signature()
+            send_message = await answer_message.create_message()
             markup = await create_markup(next_message_id)
             await bot.send_message(
                 callback.message.chat.id,
-                send_message,
+                f"{send_message} {user_signature}",
                 reply_markup=markup,
                 parse_mode="Markdown",
             )
@@ -387,6 +407,7 @@ async def callback_edit(callback: CallbackQuery) -> None:
     state = 'token'
     await bot.send_message(callback.message.chat.id, text=add_instruction, parse_mode="Markdown")
     await bot.answer_callback_query(callback.id)
+
 
 @bot.callback_query_handler(func=lambda callback: clb_edit.filter().check(callback))
 async def callback_edit(callback: CallbackQuery):
@@ -439,25 +460,18 @@ async def callback_not_answer(callback: CallbackQuery):
     await bot.answer_callback_query(int(callback.id))
 
 
-@bot.callback_query_handler(func=lambda callback: clb_add_signature.filter().check(callback))
+@bot.callback_query_handler(func=lambda callback: callback.data == 'add_signature')
 async def callback_add_signature(callback: CallbackQuery):
-    global my_signature
-    cl_data = clb_add_signature.parse(callback_data=callback.data)
-    mid = cl_data.get('mid')
-    feedback_msg = my_state.pop(int(mid), None)
-    ai_answer = f"{feedback_msg.ai_answer} {my_signature}"
-    feedback_msg.ai_answer = ai_answer
-    send_msg = await feedback_msg.create_message_with_signature()
-    markup = await create_markup(callback.message.message_id+1)
-    signature_message = await bot.send_message(
-        callback.message.chat.id,
-        send_msg,
-        reply_markup=markup,
-        parse_mode="Markdown",
-    )
-    feedback_msg.message_id = signature_message.message_id
-    my_state[feedback_msg.message_id] = feedback_msg
-    await bot.delete_message(callback.message.chat.id, int(mid))
+    global state
+    user_data = await db.get_user_data(callback.from_user.id)
+    user_signature = user_data[6]
+    match = re.fullmatch(r"^\s+$", user_signature)
+    instruction = "У Вас нет подписи! Введите подпись в следующем сообщении!" \
+        if match and not '' else \
+        f"Ваша текущая подпись: {user_signature}. \nЕсли желаете изменить подпись, " \
+        f"введите подпись в следующем сообщении!"
+    state = 'signature'
+    await bot.send_message(callback.message.chat.id, text=instruction, parse_mode="Markdown")
     await bot.answer_callback_query(callback.id)
 
 
@@ -465,12 +479,15 @@ async def callback_add_signature(callback: CallbackQuery):
 async def callback_pulish(callback: CallbackQuery):
     global user_parser
     uid = int(callback.from_user.id)
-    cl_data = clb_add_signature.parse(callback_data=callback.data)
+    cl_data = clb_publish.parse(callback_data=callback.data)
     mid = cl_data.get('mid')
     fedback_msg = my_state.pop(int(mid), None)
-    await user_parser.feedback_answer(
+    response = await user_parser.feedback_answer(
         fedback_msg.feedback_id, fedback_msg.ai_answer
     )
+    if response.status == 200:
+        message_success = await fedback_msg.create_message_success()
+        await bot.send_message(callback.message.chat.id, message_success)
     await db.minus_count_query(uid)
     await bot.delete_message(callback.message.chat.id, int(mid))
     await bot.answer_callback_query(int(callback.id))
@@ -509,21 +526,7 @@ async def bot_start(callback: CallbackQuery) -> None:
 @bot.callback_query_handler(func=lambda callback: True)
 async def callbacks(callback: CallbackQuery) -> None:
     global uid
-    if callback.data == "main_menu":
-        add_user = await db.add_user_query(uid, callback.message.chat.id)
-        if add_user:
-            answer_message = (
-                f"Поздравляем {callback.from_user.first_name}, Вам доступно 60 бесплатных отзывов!"
-            )
-            await bot.send_message(callback.message.chat.id, answer_message)
-        else:
-            count_query = await db.get_count_query(uid)
-            answer_message = (
-                f"{callback.from_user.first_name} Ваш аккаунт был добавлен раннее, "
-                f"у Вас осталось {count_query} ответов."
-            )
-            await bot.send_message(callback.message.chat.id, answer_message, reply_markup=top_menu)
-    elif callback.data == "pay_100":
+    if callback.data == "pay_100":
         await db.add_count_query(uid, 100)
         await db.payed_query_true(uid)
         await bot.send_message(

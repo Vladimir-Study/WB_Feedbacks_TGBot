@@ -16,7 +16,7 @@ class WBParser:
     def __init__(self, token):
         self.token = token
 
-    async def get_feedback(self, is_answered: str = 'false', take: int = 1, skip: int = 0):
+    async def get_feedback(self, is_answered: str = 'false', take: int = 30, skip: int = 0):
         params = {
             "isAnswered": is_answered,
             "take": take,
@@ -42,7 +42,6 @@ class WBParser:
         }
         try:
             response = await YandexAI.create_request(self.GET_FEEDBACK_URL, 'patch', headers=headers, body=body)
-            pprint(response)
             logger.success("Answer feedback")
             return response
         except Exception as E:

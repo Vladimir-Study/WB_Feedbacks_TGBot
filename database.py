@@ -7,18 +7,18 @@ from logger import logger
 class DataBase:
     async def modify_db(self):
         async with aiosqlite.connect("WB_feedbacks.sql") as db:
-            async with db.execute(
-                "SELECT * FROM sqlite_master WHERE type='table';"
-            ) as cursor:
-                async for row in cursor:
-                    print(row, row[1])
-            # async with db.execute("SELECT * FROM users;") as cursor:
+            # async with db.execute(
+            #     "SELECT * FROM sqlite_master WHERE type='table';"
+            # ) as cursor:
             #     async for row in cursor:
-            #         print(row)
+            #         print(row, row[1])
+            async with db.execute("SELECT * FROM users;") as cursor:
+                async for row in cursor:
+                    print(row)
             # await db.execute(f"INSERT INTO users (uid, chat_id) VALUES (?, ?);", [12345555, 4321])
             # res = await db.commit()
             # print(res)
-            # await db.execute(f"ALTER TABLE users ADD COLUMN chat_id INTEGER;")
+            # await db.execute(f"ALTER TABLE users ADD COLUMN signature VARCHAR(150) DEFAULT '';")
             # await db.commit()
 
     async def get_all_data(self):
@@ -49,6 +49,19 @@ class DataBase:
                 return True
             except IntegrityError:
                 logger.info("User was added in Database")
+                return False
+
+    async def add_user_signature(self, uid: int, signature: str):
+        async with aiosqlite.connect("WB_feedbacks.sql") as db:
+            try:
+                await db.execute(
+                    f"UPDATE users SET signature = ? WHERE uid = ?;", [signature, uid]
+                )
+                await db.commit()
+                logger.success("User added signature")
+                return True
+            except IntegrityError:
+                logger.info("Error added signature")
                 return False
 
     async def payed_query_true(self, uid):
@@ -132,6 +145,6 @@ class DataBase:
 
 if __name__ == "__main__":
     test = DataBase()
-    asyncio.run(test.get_user_data(1234))
+    asyncio.run(test.modify_db())
     # asyncio.run(test.get_count_query(6529453359))
     # asyncio.run(test.set_token_query(6529453359, '1sdf00'))

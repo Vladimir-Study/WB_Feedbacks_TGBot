@@ -18,9 +18,9 @@ class Answer:
         self.user_name = user_name
 
 
-    async def create_message_not_signature(self):
-        self.ai_answer = re.sub(r'\bС уважением.+(\n)?.+', '', self.ai_answer).replace('\n', '')
-        answer_message = f"Я нашла новый отзыв в магазине {self.company}(Wildberries) и " \
+    async def create_message(self):
+        self.ai_answer = re.sub(r'\bС уважением.+(\n)?.+', '', self.ai_answer).replace('\n\n', ' ')
+        answer_message = f"Я нашла новый отзыв в магазине {self.company} (Wildberries) и " \
                          f"сгенерировала на него ответ\n\n" \
                          f"*Товар:* {self.product_name}\n" \
                          f"*Оценка* {self.product_valuation}\n" \
@@ -30,8 +30,11 @@ class Answer:
         return answer_message
 
 
-    async def create_message_with_signature(self):
-        answer_message = f"Я нашла новый отзыв в магазине {self.company}(Wildberries) и " \
+    async def create_message_success(self):
+        self.ai_answer = re.sub(r'\bС уважением.+(\n)?.+', '', self.ai_answer).replace('\n\n', '') \
+            .replace('\n',' ')
+        answer_message = f"✅Отзыв успешно опубликован\n\n" \
+                         f"Я нашла новый отзыв в магазине {self.company} (Wildberries) и " \
                          f"сгенерировала на него ответ\n\n" \
                          f"*Товар:* {self.product_name}\n" \
                          f"*Оценка* {self.product_valuation}\n" \
